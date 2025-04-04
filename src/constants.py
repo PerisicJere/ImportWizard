@@ -11,7 +11,7 @@ FILES_TO_SKIP: list[str] = [
 ]
 
 SOURCE_FOLDER: Path = (
-            Path(__file__).parent.parent
+            Path(__file__).parent
         )
 
 FILE_EXTENSION: str = "*.impwiz"
