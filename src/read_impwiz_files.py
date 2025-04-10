@@ -4,7 +4,6 @@
 from pathlib import Path
 from constants import SOURCE_FOLDER, FILE_EXTENSION
 import subprocess
-from import_model import ImportModel
 from flow_compose import flow, flow_function, FlowFunction, FlowArgument
 
 
@@ -40,8 +39,8 @@ def check_if_import_names_are_correct(read_files: FlowFunction[list[str]]) -> li
     return cleaned_imports
 
 @flow_function(cached=True)
-def get_import_info(check_import_names: FlowFunction[list[str]]) -> list[ImportModel]:
-    imports: list[ImportModel] = []
+def get_import_info(check_import_names: FlowFunction[list[str]]) -> dict[str, str]:
+    imports: dict[str, str] = {}
     version: str
     description: str
     requires: str
@@ -51,23 +50,13 @@ def get_import_info(check_import_names: FlowFunction[list[str]]) -> list[ImportM
             for line in import_info.stdout.splitlines():
                 if line.startswith('Version:'):
                     version = line.split(':')[1].strip()
-                if line.startswith('Requires:'):
-                    requires = line.split(':')[1].strip()
-                if line.startswith('Summary:'):
-                    description = line.split(':')[1].strip()
-            import_model = ImportModel(
-                import_name=imp,
-                version=version or 'latest',
-                description=description or 'No description available',
-                requires=requires or 'No requires',
-            )
-            imports.append(import_model)
+                    imports[imp] = version
     return imports
 
 @flow_function(cached=True)
-def generate_used_imports(import_info: FlowFunction[list[ImportModel]]) -> None:
-    for imp in import_info():
-        print(f"{imp.import_name}=={imp.version}")
+def generate_used_imports(import_info: FlowFunction[list[str]]) -> None:
+    for name, version in import_info().items():
+        print(f"{name}=={version}")
 
 @flow(
     target_folder=FlowArgument(str, default=str(SOURCE_FOLDER)),
@@ -77,5 +66,5 @@ def generate_used_imports(import_info: FlowFunction[list[ImportModel]]) -> None:
     import_info=get_import_info,
     generate_imports=generate_used_imports,
 )
-def main_flow(generate_imports: FlowFunction[None]) -> None:
+def used_imports_flow(generate_imports: FlowFunction[None]) -> None:
     generate_imports()

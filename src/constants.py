@@ -14,7 +14,7 @@ SOURCE_FOLDER: Path = (
             Path(__file__).parent
         )
 
-FILE_EXTENSION: str = "*.impwiz"
+FILE_EXTENSION: str = "*.py"
 
 IMPORT_REGEX: Final = re.compile(
     r"^import (?P<import>[\w.]+)$"

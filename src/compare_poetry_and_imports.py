@@ -4,16 +4,11 @@
 import io
 from contextlib import redirect_stdout
 from pathlib import Path
-from typing import Set
-
 import tomlkit
-from pandas.compat import set_function_name
-
-from constants import SOURCE_FOLDER, FILE_EXTENSION
-import subprocess
 from flow_compose import flow, flow_function, FlowFunction, FlowArgument
 
-from read_impwiz_files import main_flow
+from constants import SOURCE_FOLDER
+from read_impwiz_files import used_imports_flow
 
 
 @flow_function(cached=True)
@@ -21,7 +16,7 @@ def get_used_imports(target_folder: FlowFunction[str] = None) -> set[str]:
     used_imports: set[str] = set()
     f = io.StringIO()
     with redirect_stdout(f):
-        main_flow(target_folder = Path(target_folder()) if target_folder else SOURCE_FOLDER)
+        used_imports_flow(target_folder = Path(target_folder()) if target_folder else SOURCE_FOLDER)
     used_imports.add(f.getvalue().replace("\n", ""))
     return used_imports
 
