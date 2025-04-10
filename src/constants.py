@@ -5,10 +5,10 @@ import re
 from pathlib import Path
 from typing import Final
 
-FILES_TO_SKIP: list[str] = [
+FILES_TO_SKIP: set[str] = {
     "venv",
     ".idea",
-]
+}
 
 SOURCE_FOLDER: Path = (
             Path(__file__).parent

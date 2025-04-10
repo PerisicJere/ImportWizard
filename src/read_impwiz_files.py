@@ -1,8 +1,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 #  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+import os
 from pathlib import Path
-from constants import SOURCE_FOLDER, FILE_EXTENSION
+from constants import SOURCE_FOLDER, FILE_EXTENSION, FILES_TO_SKIP
 import subprocess
 from flow_compose import flow, flow_function, FlowFunction, FlowArgument
 
@@ -10,10 +11,13 @@ from flow_compose import flow, flow_function, FlowFunction, FlowArgument
 @flow_function(cached=True)
 def valid_py_files(target_folder: FlowFunction[str] = None) -> list[Path]:
     folder_to_use = Path(target_folder()) if target_folder else SOURCE_FOLDER
-    py_files: list[Path] = [
-        file
-        for file in folder_to_use.rglob(FILE_EXTENSION)
-        ]
+    py_files: list[Path] = []
+    for file in folder_to_use.rglob(FILE_EXTENSION):
+        path_to_check: set[str] = set(str(file.parent).split(sep="/"))
+        if ('venv' or '.idea') in path_to_check:
+            continue
+        else:
+            py_files.append(file)
     return py_files
 
 @flow_function(cached=True)
