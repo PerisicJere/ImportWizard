@@ -45,9 +45,9 @@ def parse_poetry_lock(poetry_lock_files: FlowFunction[list[Path]]) -> dict[str, 
     return dependencies
 
 @flow_function(cached=True)
-def set_from_dict(parse_poetry_lock: FlowFunction[list[Path]]) -> set[str]:
+def set_from_dict(parsed_poetry_lock_dict: FlowFunction[list[Path]]) -> set[str]:
     dependencies: set[str] = set()
-    for dependency, version in parse_poetry_lock().items():
+    for dependency, version in parsed_poetry_lock_dict().items():
         if version.startswith('<=') or version.startswith('>='):
             dependencies.add(f"{dependency}{version}")
         else:
@@ -75,7 +75,7 @@ None:
         print(inter)
 
 @flow_function(cached=True)
-def choose_set_function(difference: FlowFunction[None], intersection: FlowFunction[None], set_function: FlowArgument[str]) -> None:
+def display_with_set_functions(difference: FlowFunction[None], intersection: FlowFunction[None], set_function: FlowArgument[str]) -> None:
     if set_function() in {"--difference", "-d"}:
         difference()
     elif set_function() in {"--intersection", "-i"}:
@@ -89,11 +89,11 @@ def choose_set_function(difference: FlowFunction[None], intersection: FlowFuncti
     set_function=FlowArgument(str, default="--difference"),
     used_imports=get_used_imports,
     poetry_lock_files=find_poetry_lock_files,
-    parse_poetry_lock=parse_poetry_lock,
+    parsed_poetry_lock_dict=parse_poetry_lock,
     dependencies_set=set_from_dict,
     difference=difference_of_used_imports_and_dependencies,
     intersection=intersection_of_used_imports_and_dependencies,
-    choose_set_function=choose_set_function
+    display_dependencies=display_with_set_functions
 )
 def poetry_flow(choose_set_function: FlowFunction[None]) -> None:
     choose_set_function()

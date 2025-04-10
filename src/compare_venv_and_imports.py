@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 #  file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-from flow_compose import flow, flow_function, FlowFunction, FlowArgument
+from flow_compose import flow, flow_function, FlowFunction
 import subprocess
 
 @flow_function(cached=True)
@@ -23,10 +23,10 @@ def display_from_dict(dict_of_dependencies: FlowFunction[dict[str, str]]) -> Non
 
 @flow(
     dict_of_dependencies=get_dict_of_dependencies,
-    display_from_dict=display_from_dict
+    venv_dependencies=display_from_dict
 )
-def venv_flow(display_from_dict: FlowFunction[None]) -> None:
-    display_from_dict()
+def venv_flow(venv_dependencies: FlowFunction[None]) -> None:
+    venv_dependencies()
 
 if __name__ == '__main__':
     venv_flow()
