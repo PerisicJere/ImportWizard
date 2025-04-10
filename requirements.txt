@@ -1,9 +1,0 @@
-# Description: Data validation using Python type hints
-# Requirements: annotated-types, pydantic-core, typing-extensions, typing-inspection
-pydantic==2.11.0
-# Description: Powerful data structures for data analysis, time series, and statistics
-# Requirements: numpy, python-dateutil, pytz, tzdata
-pandas==2.2.3
-# Description: Python plotting package
-# Requirements: contourpy, cycler, fonttools, kiwisolver, numpy, packaging, pillow, pyparsing, python-dateutil
-matplotlib==3.10.1

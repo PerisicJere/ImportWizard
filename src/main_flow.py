@@ -5,6 +5,7 @@ from flow_compose import flow, Flow
 import sys
 
 from compare_poetry_and_imports import poetry_flow
+from compare_venv_and_imports import venv_flow
 from read_impwiz_files import used_imports_flow
 
 
@@ -22,6 +23,8 @@ def main_flow()->None:
             poetry_flow(set_function="-d")
         elif '--intersection' in arguments or '-i' in arguments:
             poetry_flow(set_function="-i")
+    elif '--venv' in arguments:
+        venv_flow()
     elif '--help' in arguments or '-h' in arguments:
         print("""
 Usage: impwiz [OPTIONS]
@@ -31,6 +34,7 @@ Options:
   -p, --poetry              Use poetry.lock / pyproject.toml as dependency source
   -d, --difference          Show declared dependencies not used in code
   -i, --intersection        Show used imports that are in poetry.lock
+  --venv                    Show imports in virtual environment
   -h, --help                Show this help message
 """.strip())
     else:
