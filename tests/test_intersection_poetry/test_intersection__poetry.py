@@ -6,12 +6,14 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import TestCase
 
-from read_impwiz_files import main_flow
+from pandas.compat import set_function_name
+
+from compare_poetry_and_imports import poetry_flow
 
 
-class TestMixExistingImports(TestCase):
-    def test_mix_existing_imports(self):
+class TestPoetry(TestCase):
+    def test_intersection_poetry(self):
         with io.StringIO() as stream, redirect_stdout(stream):
-            main_flow(target_folder=str(f"{Path(__file__).parent.parent}/test_mix_existing_imports"))
+            poetry_flow(target_folder=str(f"{Path(__file__).parent.parent}/test_poetry"), set_function="-i")
             output = stream.getvalue()
-        self.assertEqual(output, "pydantic==2.11.0\npandas==2.2.3\nmatplotlib==3.10.1\n")
+        self.assertEqual(output, "pydantic==2.11.0\n")

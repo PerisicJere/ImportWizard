@@ -1,9 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 #  file, You can obtain one at https://mozilla.org/MPL/2.0/.
-from importlib.metadata import files
 from pathlib import Path
-from constants import FILES_TO_SKIP, SOURCE_FOLDER, FILE_EXTENSION, REQ_FILE
+from constants import SOURCE_FOLDER, FILE_EXTENSION
 import subprocess
 from import_model import ImportModel
 from flow_compose import flow, flow_function, FlowFunction, FlowArgument
@@ -80,6 +79,3 @@ def generate_used_imports(import_info: FlowFunction[list[ImportModel]]) -> None:
 )
 def main_flow(generate_imports: FlowFunction[None]) -> None:
     generate_imports()
-
-if __name__ == '__main__':
-    main_flow()
