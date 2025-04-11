@@ -9,6 +9,10 @@ from flow_compose import flow, flow_function, FlowFunction, FlowArgument
 
 from constants import SOURCE_FOLDER
 from read_impwiz_files import used_imports_flow
+from utils import (
+    difference_of_used_imports_and_dependencies,
+    intersection_of_used_imports_and_dependencies,
+)
 
 
 @flow_function(cached=True)
@@ -16,18 +20,22 @@ def get_used_imports(target_folder: FlowFunction[str] = None) -> set[str]:
     used_imports: set[str] = set()
     f = io.StringIO()
     with redirect_stdout(f):
-        used_imports_flow(target_folder = Path(target_folder()) if target_folder else SOURCE_FOLDER)
-    used_imports.add(f.getvalue().replace("\n", ""))
+        used_imports_flow(
+            target_folder=Path(target_folder()) if target_folder else SOURCE_FOLDER
+        )
+    for line in f.getvalue().splitlines():
+        used_imports.add(line)
     return used_imports
+
 
 @flow_function(cached=True)
 def find_poetry_lock_files(target_folder: FlowFunction[str] = None) -> list[Path]:
     folder_to_use = Path(target_folder()) if target_folder else SOURCE_FOLDER
     poetry_lock_files: list[Path] = [
-        file
-        for file in folder_to_use.rglob("poetry.lock")
+        file for file in folder_to_use.rglob("poetry.lock")
     ]
     return poetry_lock_files
+
 
 @flow_function(cached=True)
 def parse_poetry_lock(poetry_lock_files: FlowFunction[list[Path]]) -> dict[str, str]:
@@ -35,56 +43,53 @@ def parse_poetry_lock(poetry_lock_files: FlowFunction[list[Path]]) -> dict[str, 
     for poetry_lock_file in poetry_lock_files():
         with poetry_lock_file.open() as f:
             poetry_lock = tomlkit.parse(f.read())
-            for i in range(len(poetry_lock['package'])):
-                dependencies[poetry_lock['package'][i]['name']] = poetry_lock['package'][i]['version']
-                if 'dependencies' in poetry_lock['package'][i]:
-                    for dependency, version in poetry_lock['package'][i]['dependencies'].items():
+            for i in range(len(poetry_lock["package"])):
+                dependencies[poetry_lock["package"][i]["name"]] = poetry_lock[
+                    "package"
+                ][i]["version"]
+                if "dependencies" in poetry_lock["package"][i]:
+                    for dependency, version in poetry_lock["package"][i][
+                        "dependencies"
+                    ].items():
                         if isinstance(version, str):
                             dependencies[dependency] = version
 
     return dependencies
 
+
 @flow_function(cached=True)
 def set_from_dict(parsed_poetry_lock_dict: FlowFunction[list[Path]]) -> set[str]:
     dependencies: set[str] = set()
     for dependency, version in parsed_poetry_lock_dict().items():
-        if version.startswith('<=') or version.startswith('>='):
+        if version.startswith("<=") or version.startswith(">="):
             dependencies.add(f"{dependency}{version}")
         else:
             dependencies.add(f"{dependency}=={version}")
 
     return dependencies
 
-@flow_function(cached=True)
-def difference_of_used_imports_and_dependencies(dependencies_set: FlowFunction[set[str]], used_imports: FlowFunction[set[str]]) -> \
-None:
-    used_imports: set[str] = used_imports()
-    dependencies: set[str] = dependencies_set()
-    difference = list(dependencies.difference(used_imports))
-
-    for dif in sorted(difference):
-        print(dif)
 
 @flow_function(cached=True)
-def intersection_of_used_imports_and_dependencies(dependencies_set: FlowFunction[set[str]], used_imports: FlowFunction[set[str]]) -> \
-None:
-    used_imports: set[str] = used_imports()
-    dependencies: set[str] = dependencies_set()
-    intersection = list(dependencies.intersection(used_imports))
-    for inter in sorted(intersection):
-        print(inter)
-
-@flow_function(cached=True)
-def display_with_set_functions(difference: FlowFunction[None], intersection: FlowFunction[None], dependencies_set: FlowFunction[set[str]], set_function: FlowArgument[str]) -> None:
+def display_with_set_functions_poetry(
+    dependencies_set: FlowFunction[set[str]],
+    used_imports: FlowFunction[set[str]],
+    set_function: FlowArgument[str],
+) -> None:
     if set_function() in {"--difference", "-d"}:
-        difference()
+        difference_of_used_imports_and_dependencies(
+            dependencies_set=dependencies_set(), used_imports=used_imports()
+        )
     elif set_function() in {"--intersection", "-i"}:
-        intersection()
+        intersection_of_used_imports_and_dependencies(
+            dependencies_set=dependencies_set(), used_imports=used_imports()
+        )
     elif set_function() in {"--all", "-a"}:
         for dependency in dependencies_set():
             print(dependency)
     else:
-        assert set_function() in ["difference", "intersection"], "Invalid function choice"
+        assert set_function() in ["--difference", "--intersection", "--all"], (
+            "Invalid function choice"
+        )
 
 
 @flow(
@@ -94,9 +99,7 @@ def display_with_set_functions(difference: FlowFunction[None], intersection: Flo
     poetry_lock_files=find_poetry_lock_files,
     parsed_poetry_lock_dict=parse_poetry_lock,
     dependencies_set=set_from_dict,
-    difference=difference_of_used_imports_and_dependencies,
-    intersection=intersection_of_used_imports_and_dependencies,
-    display_dependencies=display_with_set_functions
+    display_dependencies=display_with_set_functions_poetry,
 )
-def poetry_flow(choose_set_function: FlowFunction[None]) -> None:
-    choose_set_function()
+def poetry_flow(display_dependencies: FlowFunction[None]) -> None:
+    display_dependencies()

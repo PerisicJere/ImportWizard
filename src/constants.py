@@ -10,17 +10,11 @@ FILES_TO_SKIP: set[str] = {
     ".idea",
 }
 
-SOURCE_FOLDER: Path = (
-            Path(__file__).parent
-        )
+SOURCE_FOLDER: Path = Path(__file__).parent
 
 FILE_EXTENSION: str = "*.py"
 
-IMPORT_REGEX: Final = re.compile(
-    r"^import (?P<import>[\w.]+)$"
-)
-FROM_IMPORT_REGEX: Final = re.compile(
-    r"from (?P<from>[\w.]+)$"
-)
+IMPORT_REGEX: Final = re.compile(r"^import (?P<import>[\w.]+)$")
+FROM_IMPORT_REGEX: Final = re.compile(r"from (?P<from>[\w.]+)$")
 
 REQ_FILE: Final = "requirements.txt"

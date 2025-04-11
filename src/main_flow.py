@@ -10,26 +10,40 @@ from compare_poetry_and_imports import poetry_flow
 from compare_venv_and_imports import venv_flow
 from read_impwiz_files import used_imports_flow
 
-target_folder =  Path.cwd()
+target_folder = Path.cwd()
 
 
 @flow(
     used_imports_flow=Flow(used_imports_flow),
     poetry_flow=Flow(poetry_flow),
 )
-def main_flow()->None:
+def main_flow() -> None:
     arguments = sys.argv[1:]
-    if '--requirements' in arguments or '-r' in arguments:
+    if "--requirements" in arguments or "-r" in arguments:
         used_imports_flow(target_folder=target_folder)
-    elif '--poetry' in arguments or '-p' in arguments:
-        if '--difference' in arguments or '-d' in arguments:
+    elif "--poetry" in arguments or "-p" in arguments:
+        assert len(arguments) > 1, (
+            "Please include one of following, {'-a | --all', '-d | --difference', '-i | --intersection'}, or use 'impwiz -h | --help'"
+        )
+        if "--difference" in arguments or "-d" in arguments:
             poetry_flow(target_folder=target_folder, set_function="-d")
-        elif '--intersection' in arguments or '-i' in arguments:
+        elif "--intersection" in arguments or "-i" in arguments:
             poetry_flow(target_folder=target_folder, set_function="-i")
-    elif '--venv' in arguments:
-        venv_flow(target_folder=target_folder)
-    elif '--help' in arguments or '-h' in arguments:
-        print("""
+        elif "--all" in arguments or "-a" in arguments:
+            poetry_flow(target_folder=target_folder, set_function="-a")
+    elif "--venv" in arguments:
+        assert len(arguments) > 1, (
+            "Please include one of following, {'-a | --all', '-d | --difference', '-i | --intersection'}, or use 'impwiz -h | --help'"
+        )
+        if "--difference" in arguments or "-d" in arguments:
+            venv_flow(target_folder=target_folder, set_function="-d")
+        elif "--intersection" in arguments or "-i" in arguments:
+            venv_flow(target_folder=target_folder, set_function="-i")
+        elif "--all" in arguments or "-a" in arguments:
+            venv_flow(target_folder=target_folder, set_function="-a")
+    elif "--help" in arguments or "-h" in arguments:
+        print(
+            """
 Usage: impwiz [OPTIONS]
 
 Options:
@@ -39,9 +53,11 @@ Options:
   -i, --intersection        Show used imports that are in poetry.lock
   --venv                    Show imports in virtual environment
   -h, --help                Show this help message
-""".strip())
+""".strip()
+        )
     else:
         print("Unknown command. Try impwiz --help")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main_flow()

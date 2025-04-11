@@ -14,7 +14,9 @@ class TestVenv(TestCase):
         with io.StringIO() as stream, redirect_stdout(stream):
             venv_flow()
             output = stream.getvalue()
-        self.assertEqual(output, """annotated-types==0.7.0
+        self.assertEqual(
+            output,
+            """annotated-types==0.7.0
 contourpy==1.3.1
 cycler==0.12.1
 flow-compose==0.3.9
@@ -32,7 +34,9 @@ pydantic_core==2.33.0
 pyparsing==3.2.3
 python-dateutil==2.9.0.post0
 pytz==2025.2
+ruff==0.11.5
 six==1.17.0
 tomlkit==0.13.2
 tzdata==2025.2
-""")
+""",
+        )

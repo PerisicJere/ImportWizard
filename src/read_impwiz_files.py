@@ -14,11 +14,12 @@ def valid_py_files(target_folder: FlowFunction[str] = None) -> list[Path]:
     py_files: list[Path] = []
     for file in folder_to_use.rglob(FILE_EXTENSION):
         path_to_check: set[str] = set(str(file.parent).split(sep="/"))
-        if ('venv' or '.idea') in path_to_check:
+        if ("venv" or ".idea") in path_to_check:
             continue
         else:
             py_files.append(file)
     return py_files
+
 
 @flow_function(cached=True)
 def read_py_files(valid_files: FlowFunction[list[Path]]) -> list[str]:
@@ -26,11 +27,12 @@ def read_py_files(valid_files: FlowFunction[list[Path]]) -> list[str]:
     for file_path in valid_files():
         with file_path.open() as f:
             for line in f:
-                if line.startswith('import'):
-                    imports.append(line.split(' ')[1].strip())
-                elif line.startswith('from'):
-                    imports.append(line.split(' ')[1].strip())
+                if line.startswith("import"):
+                    imports.append(line.split(" ")[1].strip())
+                elif line.startswith("from"):
+                    imports.append(line.split(" ")[1].strip())
     return imports
+
 
 @flow_function(cached=True)
 def check_if_import_names_are_correct(read_files: FlowFunction[list[str]]) -> list[str]:
@@ -42,20 +44,22 @@ def check_if_import_names_are_correct(read_files: FlowFunction[list[str]]) -> li
             cleaned_imports.append(imp)
     return cleaned_imports
 
+
 @flow_function(cached=True)
 def get_import_info(check_import_names: FlowFunction[list[str]]) -> dict[str, str]:
     imports: dict[str, str] = {}
     version: str
-    description: str
-    requires: str
     for imp in check_import_names():
-        import_info = subprocess.run(['pip', 'show', imp], capture_output=True, text=True)
+        import_info = subprocess.run(
+            ["pip", "show", imp], capture_output=True, text=True
+        )
         if import_info.returncode == 0:
             for line in import_info.stdout.splitlines():
-                if line.startswith('Version:'):
-                    version = line.split(':')[1].strip()
+                if line.startswith("Version:"):
+                    version = line.split(":")[1].strip()
                     imports[imp] = version
     return imports
+
 
 @flow_function(cached=True)
 def generate_used_imports(import_info: FlowFunction[list[str]]) -> None:

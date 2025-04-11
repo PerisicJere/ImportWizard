@@ -12,6 +12,10 @@ from read_impwiz_files import used_imports_flow
 class TestExistingImports(TestCase):
     def test_existing_import(self):
         with io.StringIO() as stream, redirect_stdout(stream):
-            used_imports_flow(target_folder=str(f"{Path(__file__).parent.parent}/test_existing_imports"))
+            used_imports_flow(
+                target_folder=str(
+                    f"{Path(__file__).parent.parent}/test_existing_imports"
+                )
+            )
             output = stream.getvalue()
         self.assertEqual(output, "pydantic==2.11.0\npandas==2.2.3\n")
