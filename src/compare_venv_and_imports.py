@@ -2,8 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 #  file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-from flow_compose import flow, flow_function, FlowFunction
+from flow_compose import flow, flow_function, FlowFunction, FlowArgument
 import subprocess
+
+from compare_poetry_and_imports import get_used_imports
+from constants import SOURCE_FOLDER
+
 
 @flow_function(cached=True)
 def get_dict_of_dependencies() -> dict[str, str]:
@@ -22,6 +26,8 @@ def display_from_dict(dict_of_dependencies: FlowFunction[dict[str, str]]) -> Non
         print(f"{name}=={version}")
 
 @flow(
+    target_folder=FlowArgument(str, default=str(SOURCE_FOLDER)),
+    used_imports=get_used_imports,
     dict_of_dependencies=get_dict_of_dependencies,
     venv_dependencies=display_from_dict
 )

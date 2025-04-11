@@ -27,7 +27,7 @@ def main_flow()->None:
         elif '--intersection' in arguments or '-i' in arguments:
             poetry_flow(target_folder=target_folder, set_function="-i")
     elif '--venv' in arguments:
-        venv_flow()
+        venv_flow(target_folder=target_folder)
     elif '--help' in arguments or '-h' in arguments:
         print("""
 Usage: impwiz [OPTIONS]

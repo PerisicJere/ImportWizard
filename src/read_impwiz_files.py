@@ -62,6 +62,7 @@ def generate_used_imports(import_info: FlowFunction[list[str]]) -> None:
     for name, version in import_info().items():
         print(f"{name}=={version}")
 
+
 @flow(
     target_folder=FlowArgument(str, default=str(SOURCE_FOLDER)),
     valid_files=valid_py_files,

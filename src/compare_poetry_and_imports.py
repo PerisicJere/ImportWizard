@@ -75,11 +75,14 @@ None:
         print(inter)
 
 @flow_function(cached=True)
-def display_with_set_functions(difference: FlowFunction[None], intersection: FlowFunction[None], set_function: FlowArgument[str]) -> None:
+def display_with_set_functions(difference: FlowFunction[None], intersection: FlowFunction[None], dependencies_set: FlowFunction[set[str]], set_function: FlowArgument[str]) -> None:
     if set_function() in {"--difference", "-d"}:
         difference()
     elif set_function() in {"--intersection", "-i"}:
         intersection()
+    elif set_function() in {"--all", "-a"}:
+        for dependency in dependencies_set():
+            print(dependency)
     else:
         assert set_function() in ["difference", "intersection"], "Invalid function choice"
 
