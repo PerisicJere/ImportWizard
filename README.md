@@ -17,6 +17,17 @@ Show imports in virtual environment.
 ```bash
 impwiz [--venv]
 ```
+#### Show difference between used imports and dependencies
+Displays declared dependencies that aren't used in the code:
+```bash
+impwiz [--venv] [-d | --difference]
+```
+
+#### Show intersection of used imports and dependencies
+Lists used imports and their matching versions from `venv`:
+```bash
+impwiz [--venv] [-i | --intersection]
+```
 ### Poetry
 #### Show difference between used imports and dependencies
 Displays declared dependencies that aren't used in the code:

@@ -49,9 +49,13 @@ Usage: impwiz [OPTIONS]
 Options:
   -r, --requirements        Generate requirements.txt from used imports
   -p, --poetry              Use poetry.lock / pyproject.toml as dependency source
-  -d, --difference          Show declared dependencies not used in code
-  -i, --intersection        Show used imports that are in poetry.lock
+    -d, --difference          Show declared dependencies not used in code
+    -i, --intersection        Show used imports that are in poetry.lock
+    -a, --all                 Show all dependencies, and imports
   --venv                    Show imports in virtual environment
+    -d, --difference          Show declared dependencies not used in code
+    -i, --intersection        Show used imports that are in venv
+    -a, --all                 Show all dependencies, and imports
   -h, --help                Show this help message
 """.strip()
         )
